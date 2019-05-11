@@ -49,6 +49,8 @@ text {
 .star {
     fill: #fff;
     opacity: .6;
+    cursor: pointer;
+    transition: opacity .25s ease-out;
 }
 
 .star.star--active {
@@ -57,7 +59,7 @@ text {
 
 .constellation.star--active {
   stroke: #3F51B5;
-  stroke-opacity: .7;
+  stroke-opacity: .5;
 }
 
 .voronoi {
@@ -69,11 +71,12 @@ text {
   stroke: #fff;
   stroke-width: 3px;
   stroke-opacity: .2;
+  transition: all .25s ease-out;
 }
 
 .cross {
   fill: none;
-  stroke: yellow;
+  stroke: none;
   stroke-width: 0.5px;
 }
 </style>

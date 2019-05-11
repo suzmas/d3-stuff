@@ -100,7 +100,7 @@ d3.json('js/constellations.json', function(error, constellations) {
     })
     return {lines: lines, name: c.Name, abbr: c.stars[0].bfID.split(' ')[1]};
   });
-  console.log(constellationCoords);
+
   svg.append('g')
       .attr('class', 'constellations')
     .selectAll('path')
@@ -123,7 +123,6 @@ d3.csv('js/stars.csv', type, function(error, stars) {
     .enter().append('circle')
       .attr('id', function(d, i) { return 'star-' + i; })
       .attr('class', function(d) {
-        console.log(d.constellation);
         return 'star ' + d.constellation;
       })
       .attr('r', function(d) {
