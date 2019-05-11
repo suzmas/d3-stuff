@@ -88,6 +88,31 @@ svg.append('g')
     .attr('dy', '.35em')
     .text(function(d) { return d + '°'; });
 
+d3.json('js/constellations.json', function(error, constellations) {
+  if (error) throw error;
+
+  constellationCoords = constellations.map((c) => {
+    const lines = [];
+    c.lines.forEach((line) => {
+      const xy1 = projectedCoords(c.stars[line[0]]);
+      const xy2 = projectedCoords(c.stars[line[1]]);
+      lines.push(xy1, xy2);
+    })
+    return {lines: lines, name: c.Name, abbr: c.stars[0].bfID.split(' ')[1]};
+  });
+  console.log(constellationCoords);
+  svg.append('g')
+      .attr('class', 'constellations')
+    .selectAll('path')
+      .data(constellationCoords)
+    .enter().append('path')
+      .on('mouseover', function(d) { console.log(d.name); })
+      .attr('class', function(d) { return 'constellation ' + d.abbr; })
+      .attr('d', function(d) {
+        return 'M' + d.lines.join('L');
+      });
+});
+
 d3.csv('js/stars.csv', type, function(error, stars) {
   if (error) throw error;
 
@@ -114,21 +139,24 @@ d3.csv('js/stars.csv', type, function(error, stars) {
       .on('mouseover', mouseovered)
       .on('mouseout', mouseouted)
     .filter(function(d) { return d; })
-      .attr('d', function(d) { return 'M' + d.join('L'); })
+      .attr('d', function(d) {
+        return 'M' + d.join('L');
+      })
       .datum(function(d) { return d.point; })
     .append('title')
       .text(function(d) { return 'HR' + d.ID + (d.greek_letter || d.constellation ? '\n' + d.constellation + ' ' + d.greek_letter : ''); });
 });
 
-function mouseovered(d, i) {
-  var dx = d[0] - width / 2,
-      dy = d[1] - height / 2,
-      a = Math.atan2(dy, dx);
-  crossDeclination.attr('r', Math.sqrt(dx * dx + dy * dy));
-  crossRightAscension.attr('x2', width / 2 + width * Math.cos(a)).attr('y2', height / 2 + height * Math.sin(a));
-  console.log(d3.select('#star-' + i).node());
-  d3.select('#star-' + i).classed('star--active', true);
-}
+
+// function mouseovered(d, i) {
+//   var dx = d[0] - width / 2,
+//       dy = d[1] - height / 2,
+//       a = Math.atan2(dy, dx);
+//   crossDeclination.attr('r', Math.sqrt(dx * dx + dy * dy));
+//   crossRightAscension.attr('x2', width / 2 + width * Math.cos(a)).attr('y2', height / 2 + height * Math.sin(a));
+//   console.log(d3.select('#star-' + i).node());
+//   d3.select('#star-' + i).classed('star--active', true);
+// }
 
 function mouseovered(d, i) {
   var dx = d[0] - width / 2,
@@ -137,7 +165,6 @@ function mouseovered(d, i) {
   crossDeclination.attr('r', Math.sqrt(dx * dx + dy * dy));
   crossRightAscension.attr('x2', width / 2 + width * Math.cos(a)).attr('y2', height / 2 + height * Math.sin(a));
   if (d.constellation) {
-    console.log(d.constellation);
     d3.selectAll('.' + d.constellation).classed('star--active', true);
   }
 }
@@ -148,10 +175,15 @@ function mouseouted(d, i) {
 }
 
 function type(d) {
-  var p = projection([(+d.RA_hour + d.RA_min / 60 + d.RA_sec / 3600) * 15, +d.dec_deg + d.dec_min / 60 + d.dec_sec / 3600]);
+  var p = projection([(+d.RA_hour + d.RA_min / 60 + d.RA_sec / 3600) * 15, +d.dec_deg]);
   d[0] = p[0], d[1] = p[1];
   d.magnitude = +d.magnitude;
   return d;
+}
+
+function projectedCoords(d) {
+  var p = projection([+d.RAh * 15, +d.DEd]);
+  return p[0] + ',' + p[1];
 }
 
 function flippedStereographic(lambda, phi)  {

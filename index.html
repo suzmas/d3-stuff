@@ -48,17 +48,27 @@ text {
 
 .star {
     fill: #fff;
+    opacity: .6;
 }
 
-.star--active {
-  stroke: #fff;
-  stroke-width: 1%;
-  stroke-opacity: .3;
+.star.star--active {
+  opacity: .9;
+}
+
+.constellation.star--active {
+  stroke: #3F51B5;
+  stroke-opacity: .7;
 }
 
 .voronoi {
   fill: none;
   pointer-events: all;
+}
+
+.constellation {
+  stroke: #fff;
+  stroke-width: 3px;
+  stroke-opacity: .2;
 }
 
 .cross {
