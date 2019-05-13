@@ -1,0 +1,82 @@
+@import url("https://fonts.googleapis.com/css?family=Ubuntu:300,700");
+body {
+  height: 960px;
+  background: radial-gradient(720px at 490px, #081f2b 0%, #061616 100%);
+  font-family: "Ubuntu", sans-serif; }
+
+#star-map {
+  position: relative; }
+  #star-map .tooltip {
+    visibility: hidden;
+    position: absolute;
+    width: 300px;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    box-shadow: 10px 10px 32px -8px rgba(0, 0, 0, 0.5);
+    transition: all .25s ease-out; }
+    #star-map .tooltip .name {
+      margin: 0 0 8px;
+      font-size: 17px;
+      letter-spacing: .5px; }
+    #star-map .tooltip .desc {
+      margin: 0;
+      font-size: 14px; }
+
+path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round; }
+
+text {
+  font: 10px sans-serif; }
+
+.horizon {
+  stroke: #fff;
+  stroke-width: 1.5px; }
+
+.graticule {
+  stroke: #fff;
+  stroke-opacity: .15; }
+
+.ticks line {
+  stroke: #fff; }
+
+.ticks text {
+  fill: #fff;
+  text-anchor: middle; }
+
+.ticks--right-ascension text:nth-of-type(6n + 1) {
+  font-weight: bold;
+  font-size: 14px; }
+
+.stars {
+  stroke: #000; }
+
+.star {
+  fill: #fff;
+  opacity: .6;
+  cursor: pointer;
+  transition: opacity .25s ease-out; }
+
+.star.star--active {
+  opacity: .9; }
+
+.constellation.star--active {
+  stroke: #3F51B5;
+  stroke-opacity: .5; }
+
+.voronoi {
+  fill: none;
+  pointer-events: all; }
+
+.constellation {
+  stroke: #fff;
+  stroke-width: 3px;
+  stroke-opacity: .2;
+  transition: all .25s ease-out; }
+
+.cross {
+  fill: none;
+  stroke: none;
+  stroke-width: 0.5px; }

@@ -91,26 +91,35 @@ svg.append('g')
 d3.json('js/constellations.json', function(error, constellations) {
   if (error) throw error;
 
-  constellationCoords = constellations.map((c) => {
-    const lines = [];
-    c.lines.forEach((line) => {
-      const xy1 = projectedCoords(c.stars[line[0]]);
-      const xy2 = projectedCoords(c.stars[line[1]]);
-      lines.push(xy1, xy2);
-    })
-    return {lines: lines, name: c.Name, abbr: c.stars[0].bfID.split(' ')[1]};
-  });
-
-  svg.append('g')
-      .attr('class', 'constellations')
-    .selectAll('path')
-      .data(constellationCoords)
-    .enter().append('path')
-      .on('mouseover', function(d) { console.log(d.name); })
-      .attr('class', function(d) { return 'constellation ' + d.abbr; })
-      .attr('d', function(d) {
-        return 'M' + d.lines.join('L');
+  const request = new XMLHttpRequest();
+  request.open('GET', './js/constellation-data.json');
+  request.responseType = 'json';
+  request.send();
+  request.onload = function() {
+    const constellationData = request.response;
+    constellationCoords = constellations.map((c) => {
+      const lines = [];
+      c.lines.forEach((line) => {
+        const xy1 = projectedCoords(c.stars[line[0]]);
+        const xy2 = projectedCoords(c.stars[line[1]]);
+        lines.push(xy1, xy2);
       });
+      const cData = constellationData.filter(cn => cn.name == c.Name)[0];
+
+      return {lines: lines, name: cData.name, desc: cData.desc, abbr: c.stars[0].bfID.split(' ')[1]};
+    });
+
+    svg.append('g')
+        .attr('class', 'constellations')
+      .selectAll('path')
+        .data(constellationCoords)
+      .enter().append('path')
+        .on('mouseover', function(d) { displayTooltip(d.name, d.desc, [`${d3.event.pageX}px`, `${d3.event.pageY}px`]) })
+        .attr('class', function(d) { return 'constellation ' + d.abbr; })
+        .attr('d', function(d) {
+          return 'M' + d.lines.join('L');
+        });
+  }
 });
 
 d3.csv('js/stars.csv', type, function(error, stars) {
@@ -146,31 +155,33 @@ d3.csv('js/stars.csv', type, function(error, stars) {
       .text(function(d) { return 'HR' + d.ID + (d.greek_letter || d.constellation ? '\n' + d.constellation + ' ' + d.greek_letter : ''); });
 });
 
-
-// function mouseovered(d, i) {
-//   var dx = d[0] - width / 2,
-//       dy = d[1] - height / 2,
-//       a = Math.atan2(dy, dx);
-//   crossDeclination.attr('r', Math.sqrt(dx * dx + dy * dy));
-//   crossRightAscension.attr('x2', width / 2 + width * Math.cos(a)).attr('y2', height / 2 + height * Math.sin(a));
-//   console.log(d3.select('#star-' + i).node());
-//   d3.select('#star-' + i).classed('star--active', true);
-// }
-
-function mouseovered(d, i) {
+function mouseovered(d) {
   var dx = d[0] - width / 2,
       dy = d[1] - height / 2,
       a = Math.atan2(dy, dx);
   crossDeclination.attr('r', Math.sqrt(dx * dx + dy * dy));
   crossRightAscension.attr('x2', width / 2 + width * Math.cos(a)).attr('y2', height / 2 + height * Math.sin(a));
+
   if (d.constellation) {
     d3.selectAll('.' + d.constellation).classed('star--active', true);
   }
 }
 
-function mouseouted(d, i) {
+function mouseouted(d) {
   d3.selectAll('.star--active').classed('star--active', false);
+}
 
+function displayTooltip(name, desc, xy) {
+  console.log(xy);
+  const tooltip = document.getElementById('constellation-tooltip');
+  tooltip.style.visibility = 'visible';
+  tooltip.querySelector('.name').innerText = name;
+  tooltip.querySelector('.desc').innerText = desc;
+  tooltip.style.left = xy[0];
+  tooltip.style.top = xy[1];
+}
+
+function moveTooltip() {
 }
 
 function type(d) {

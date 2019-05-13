@@ -1,13 +1,13 @@
 {
-  "name": "frontend-bits",
+  "name": "d3-stuff",
   "version": "1.0.0",
   "dependencies": {
     "node-sass": "^4.12.0"
   },
-  "description": "Bits of frontend stuff to play with",
+  "description": "Bits of d3 stuff to play with",
   "main": "index.js",
   "scripts": {
-    "sass": "node-sass --watch assets/scss --output assets/css",
+    "sass": "node-sass --watch css/style.scss --output css",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "suzmas",
@@ -19,13 +19,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/suzmas/frontend-bits.git"
+    "url": "git+https://github.com/suzmas/d3-stuff.git"
   },
   "keywords": [
     "frontend"
   ],
   "bugs": {
-    "url": "https://github.com/suzmas/frontend-bits/issues"
+    "url": "https://github.com/suzmas/d3-stuff/issues"
   },
-  "homepage": "https://github.com/suzmas/frontend-bits#readme"
+  "homepage": "https://github.com/suzmas/d3-stuff#readme"
 }

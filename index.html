@@ -1,87 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-<meta charset="utf-8">
-<style>
-
-body {
-  background: radial-gradient(720px at 490px, #081f2b 0%, #061616 100%);
-  height: 960px;
-}
-
-path {
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-text {
-  font: 10px sans-serif;
-}
-
-.horizon {
-  stroke: #fff;
-  stroke-width: 1.5px;
-}
-
-.graticule {
-  stroke: #fff;
-  stroke-opacity: .15;
-}
-
-.ticks line {
-  stroke: #fff;
-}
-
-.ticks text {
-  fill: #fff;
-  text-anchor: middle;
-}
-
-.ticks--right-ascension text:nth-of-type(6n + 1) {
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.stars {
-  stroke: #000;
-}
-
-.star {
-    fill: #fff;
-    opacity: .6;
-    cursor: pointer;
-    transition: opacity .25s ease-out;
-}
-
-.star.star--active {
-  opacity: .9;
-}
-
-.constellation.star--active {
-  stroke: #3F51B5;
-  stroke-opacity: .5;
-}
-
-.voronoi {
-  fill: none;
-  pointer-events: all;
-}
-
-.constellation {
-  stroke: #fff;
-  stroke-width: 3px;
-  stroke-opacity: .2;
-  transition: all .25s ease-out;
-}
-
-.cross {
-  fill: none;
-  stroke: none;
-  stroke-width: 0.5px;
-}
-</style>
+  <meta charset="utf-8">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>D3 Star Map</title>
+    <meta name="description" content="D3.js interactive constellation and star map.">
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+  </head>
 
 <body>
+
+  <div id="star-map">
+    <div id="constellation-tooltip" class="tooltip">
+      <p class="name">Name</p>
+      <p class="desc">Details</p>
+    </div>
+
+  </div>
 
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script src="js/main.js"></script>
