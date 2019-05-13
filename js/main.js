@@ -185,7 +185,7 @@ function moveTooltip() {
 }
 
 function type(d) {
-  var p = projection([(+d.RA_hour + d.RA_min / 60 + d.RA_sec / 3600) * 15, +d.dec_deg]);
+  var p = projection([(+d.RA_hour + d.RA_min / 60 + d.RA_sec / 3600) * 15, +d.dec_deg + d.dec_min / 60 + d.dec_sec / 3600]);
   d[0] = p[0], d[1] = p[1];
   d.magnitude = +d.magnitude;
   return d;
