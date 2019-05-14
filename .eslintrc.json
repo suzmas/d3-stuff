@@ -3,5 +3,12 @@
     "env": {
         "browser": true,
         "jquery": true
+    },
+    "globals": {
+        "d3": "readonly",
+        "topojson": "readonly"
+    },
+    "rules": {
+        "indent": "off"
     }
 }

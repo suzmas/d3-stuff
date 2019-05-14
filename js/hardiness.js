@@ -1,84 +1,68 @@
 
-let width = 1000;
-let height = 800;
-let centered;
+const width = 800;
+const height = 600;
 
-let projection = d3.geoAlbersUsa()
-  .scale(1070)
-  .translate([width / 2, height / 2]);
+// const projection = d3.geoAlbersUsa()
+//   .scale(1070)
+//   .translate([width / 2, height / 2]);
 
-let path = d3.geoPath()
+const path = d3.geoPath()
   .projection(null);
 
-let svg = d3.select('.map').append('svg')
+const svg = d3.select('.map').append('svg')
   .attr('width', width)
   .attr('height', height);
 
+const g = svg.append('g');
 
-svg.append('rect')
-  .attr('class', 'background')
-  .attr('width', width)
-  .attr('height', height);
+const color = d3.scaleLinear()
+  .domain([-35, 0, 35])
+  .range(['#4575b4', '#ffffbf', '#a50026'])
+  .interpolate(d3.interpolateHcl);
 
-let g = svg.append('g');
+const x = d3.scaleLinear()
+  .domain([-40, 40])
+  .range([0, 290]);
 
-// var width = 960,
-//     height = 500;
+const xAxis = d3.axisBottom(x)
+  .ticks(18)
+  .tickFormat((d) => {
+    console.log(d);
+    return 'blue';
+  });
 
-var color = d3.scaleLinear()
-    .domain([-35, 0, 35])
-    .range(['#4575b4', '#ffffbf', '#a50026'])
-    .interpolate(d3.interpolateHcl);
+  // ['2a', '2b', '3a', '3b', '4a', '4b', '5a', '5b', '6a', '6b', '7a', '7b', '8a', '8b', '9a', '9b', '10a', '10b']);
 
-// var x = d3.scaleLinear()
-//     .domain([-40, 40])
-//     .range([0, 240]);
+const key = svg.append('g')
+    .attr('class', 'key')
+    .attr('transform', `translate(10,${height - 40})`);
 
-// var xAxis = d3.axisBottom(x)
-//     .ticks(13)
-//     // .tickFormat(d3.format('+.0f'));
+function pair(array) {
+  return array.slice(1).map((b, i) => [array[i], b]);
+}
 
-// var canvas = d3.select('#hardiness-map').append('canvas')
-//     .attr('width', width)
-//     .attr('height', height);
+key.selectAll('rect')
+    .data(pair(x.ticks(10)))
+  .enter().append('rect')
+    .attr('height', 8)
+    .attr('x', d => x(d[0]))
+    .attr('width', d => x(d[1]) - x(d[0]))
+    .style('fill', d => color(d[0]));
 
-// var context = canvas.node().getContext('2d');
-
-// var path;
-
-// var svg = d3.select('#hardiness-map').append('svg')
-//     .attr('width', width)
-//     .attr('height', height)
-//     .attr('class', 'key')
-//   .append('g')
-//     // .attr('transform', 'translate(60,' + (height - 60) + ')');
-
-// var g = svg.append('g')
-//     .attr('id', 'zones')
-
-// svg.selectAll('rect')
-//     .data(pair(x.ticks(10)))
-//   .enter().append('rect')
-//     .attr('height', 8)
-//     .attr('x', function(d) { return x(d[0]); })
-//     .attr('width', function(d) { return x(d[1]) - x(d[0]); })
-//     .style('fill', function(d) { return color(d[0]); });
-
-// svg.call(xAxis).append('text')
-//     .attr('class', 'caption')
-//     .attr('y', -6)
-//     .text('Avg. annual extreme minimum temperature, °F');
+key.call(xAxis).append('text')
+    .attr('class', 'caption')
+    .attr('y', -6)
+    .text('Avg. annual extreme minimum temperature, °F');
 
 d3.json('js/ophz.json')
-  .then(function(ophz) {
+  .then((ophz) => {
+    const zones = topojson.feature(ophz, ophz.objects.b);
 
-  const zones = topojson.feature(ophz, ophz.objects.b);
-  
-  g.selectAll('path')
-      .data(zones.features)
+    g.selectAll('path')
+        .data(zones.features)
       .enter().append('path')
-      .attr('class', function(d) { return 'z' + d.properties.zone; })
-      .attr('d', path)
-      .style('fill', function(d) { return color(d.properties.t); });
-  
-});
+        .on('mouseover', d => console.log(d.properties.zone))
+        .attr('class', d => `z${d.properties.zone}`)
+        .attr('d', path)
+        .style('fill', d => color(d.properties.t));
+  });
