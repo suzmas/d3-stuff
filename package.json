@@ -7,7 +7,7 @@
   "description": "Bits of d3 stuff to play with",
   "main": "index.js",
   "scripts": {
-    "sass": "node-sass --watch css/style.scss --output css",
+    "sass": "node-sass --watch assets/scss --output assets/css",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "suzmas",

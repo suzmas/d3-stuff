@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css?family=Arimo|Open+Sans');
+
+
+body {
+    position: relative;
+    font-family: "Open Sans", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Arimo", sans-serif;
+}
+
+.title {
+    font-family: "Arimo", sans-serif;
+}
+
+.key {
+    font: 10px sans-serif;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.caption {
+    font-weight: bold;
+}
+
+.key path {
+    display: none;
+}
+
+.key line {
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
