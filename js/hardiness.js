@@ -2,12 +2,16 @@
 const width = 800;
 const height = 600;
 
-// const projection = d3.geoAlbersUsa()
-//   .scale(1070)
-//   .translate([width / 2, height / 2]);
+function scale(scaleFactor) {
+  return d3.geoTransform({
+      point(x, y) {
+        this.stream.point(x * scaleFactor, y * scaleFactor);
+      },
+  });
+}
 
 const path = d3.geoPath()
-  .projection(null);
+    .projection(scale(0.8));
 
 const svg = d3.select('.map').append('svg')
   .attr('width', width)
@@ -57,6 +61,7 @@ key.call(xAxis).append('text')
 d3.json('js/ophz.json')
   .then((ophz) => {
     const zones = topojson.feature(ophz, ophz.objects.b);
+    console.log(path.bounds(zones));
 
     g.selectAll('path')
         .data(zones.features)
@@ -64,5 +69,8 @@ d3.json('js/ophz.json')
         .on('mouseover', d => console.log(d.properties.zone))
         .attr('class', d => `z${d.properties.zone}`)
         .attr('d', path)
+        .attr('style', (d) => {
+          // console.log(path.bounds(d));
+        })
         .style('fill', d => color(d.properties.t));
   });
