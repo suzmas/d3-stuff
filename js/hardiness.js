@@ -11,19 +11,10 @@ function scale(scaleFactor) {
 }
 
 function tempToZone(temp) {
-  const tempZoneMap = {
-    '-20': 'blue',
-    '-20': 'blue',
-    '-20': 'blue',
-    '-20': 'blue',
-    '-20': 'blue',
-    '-20': 'blue',
-    '-20': 'blue',
-    '-20': 'blue',
-    '-20': 'blue',
-    '-20': 'blue',
-  }
-  ['2a', '2b', '3a', '3b', '4a', '4b', '5a', '5b', '6a', '6b', '7a', '7b', '8a', '8b', '9a', '9b', '10a', '10b']);
+  const adjTemp = temp + 60;
+  let zone = Math.round(adjTemp / 10);
+  if (zone < 1) { zone = 1; }
+  return zone;
 }
 
 const path = d3.geoPath()
@@ -42,14 +33,11 @@ const color = d3.scaleLinear()
 
 const x = d3.scaleLinear()
   .domain([-40, 40])
-  .range([0, 290]);
+  .range([0, 240]);
 
 const xAxis = d3.axisBottom(x)
-  .ticks(18)
-  .tickFormat((d) => {
-    console.log(d);
-    return 'blue';
-  });
+  .ticks(10)
+  .tickFormat(d => tempToZone(d));
 
 const key = svg.append('g')
     .attr('class', 'key')
@@ -80,10 +68,17 @@ d3.json('js/ophz.json')
     g.selectAll('path')
         .data(zones.features)
       .enter().append('path')
-        .on('mouseover', d => console.log(d.properties.zone))
+        .on('mouseover', (d) => {
+          const tooltip = document.getElementById('hardiness-tooltip');
+          tooltip.style.visibility = 'visible';
+          tooltip.querySelector('.title').innerText = `Zone ${d.properties.zone}`;
+          tooltip.style.left = `${d3.event.pageX}px`;
+          tooltip.style.top = `${d3.event.pageY}px`;
+        })
         .attr('class', d => `z${d.properties.zone}`)
         .attr('d', path)
         .style('fill', d => color(d.properties.t))
+        .style('color', d => tempToZone(d.properties.t))
       .append('title')
         .text(d => d.properties.zone);
   });
