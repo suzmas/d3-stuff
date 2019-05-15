@@ -10,6 +10,22 @@ function scale(scaleFactor) {
   });
 }
 
+function tempToZone(temp) {
+  const tempZoneMap = {
+    '-20': 'blue',
+    '-20': 'blue',
+    '-20': 'blue',
+    '-20': 'blue',
+    '-20': 'blue',
+    '-20': 'blue',
+    '-20': 'blue',
+    '-20': 'blue',
+    '-20': 'blue',
+    '-20': 'blue',
+  }
+  ['2a', '2b', '3a', '3b', '4a', '4b', '5a', '5b', '6a', '6b', '7a', '7b', '8a', '8b', '9a', '9b', '10a', '10b']);
+}
+
 const path = d3.geoPath()
     .projection(scale(0.8));
 
@@ -34,8 +50,6 @@ const xAxis = d3.axisBottom(x)
     console.log(d);
     return 'blue';
   });
-
-  // ['2a', '2b', '3a', '3b', '4a', '4b', '5a', '5b', '6a', '6b', '7a', '7b', '8a', '8b', '9a', '9b', '10a', '10b']);
 
 const key = svg.append('g')
     .attr('class', 'key')
@@ -69,8 +83,7 @@ d3.json('js/ophz.json')
         .on('mouseover', d => console.log(d.properties.zone))
         .attr('class', d => `z${d.properties.zone}`)
         .attr('d', path)
-        .attr('style', (d) => {
-          // console.log(path.bounds(d));
-        })
-        .style('fill', d => color(d.properties.t));
+        .style('fill', d => color(d.properties.t))
+      .append('title')
+        .text(d => d.properties.zone);
   });
