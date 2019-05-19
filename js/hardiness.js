@@ -24,7 +24,8 @@ const svg = d3.select('.map').append('svg')
   .attr('width', width)
   .attr('height', height);
 
-const g = svg.append('g');
+const g = svg.append('g')
+  .attr('id', 'zones');
 
 const color = d3.scaleLinear()
   .domain([-35, 0, 35])
@@ -43,8 +44,21 @@ const key = svg.append('g')
     .attr('class', 'key')
     .attr('transform', `translate(10,${height - 40})`);
 
+const tooltip = d3.select('body').append('div')
+    .attr('class', 'tooltip')
+    .style('opacity', 0);
+
 function pair(array) {
   return array.slice(1).map((b, i) => [array[i], b]);
+}
+
+function zoneHovered(d) {
+  tooltip.html(`Zone ${d.properties.zone}`)
+    .style('left', `${d3.event.pageX}px`)
+    .style('top', `${d3.event.pageY}px`);
+  tooltip.transition()
+    .duration(200)
+    .style('opacity', 1);
 }
 
 key.selectAll('rect')
@@ -54,6 +68,17 @@ key.selectAll('rect')
     .attr('x', d => x(d[0]))
     .attr('width', d => x(d[1]) - x(d[0]))
     .style('fill', d => color(d[0]));
+
+key.selectAll('text')
+    .data(pair(x.ticks(10)))
+  .enter().append('text')
+    .attr('x', d => x(d[0]) + ((x(d[1]) - x(d[0])) * 0.5))
+    .attr('width', d => x(d[1]) - x(d[0]))
+    .style('transform', 'translate(50%, 0)')
+    .text((d) => {
+      console.log(d);
+      return 'blue';
+    });
 
 key.call(xAxis).append('text')
     .attr('class', 'caption')
@@ -68,13 +93,13 @@ d3.json('js/ophz.json')
     g.selectAll('path')
         .data(zones.features)
       .enter().append('path')
-        .on('mouseover', (d) => {
-          const tooltip = document.getElementById('hardiness-tooltip');
-          tooltip.style.visibility = 'visible';
-          tooltip.querySelector('.title').innerText = `Zone ${d.properties.zone}`;
-          tooltip.style.left = `${d3.event.pageX}px`;
-          tooltip.style.top = `${d3.event.pageY}px`;
+        .on('mouseover', zoneHovered)
+        .on('mouseout', () => {
+          tooltip.transition()
+            .duration(600)
+            .style('opacity', 0);
         })
+        .on('click', fetchPlants)
         .attr('class', d => `z${d.properties.zone}`)
         .attr('d', path)
         .style('fill', d => color(d.properties.t))
@@ -82,3 +107,20 @@ d3.json('js/ophz.json')
       .append('title')
         .text(d => d.properties.zone);
   });
+
+
+// Plant Details
+
+function fetchPlants(d) {
+  const request = new XMLHttpRequest();
+  request.open('GET', `./data/plants-zone${d.properties.zone}.json`);
+  request.responseType = 'json';
+  request.send();
+  request.onload = () => {
+    const plants = request.response;
+    const plantEls = plants.map((p) => {
+      return `<div class="plant">${p.name}</div>`;
+    });
+    document.querySelector('.grid').innerHTML = plantEls;
+  };
+}
