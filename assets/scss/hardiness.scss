@@ -27,7 +27,7 @@ svg {
     fill: none;
 
     path {
-        cursor: pointer;
+        // cursor: pointer;
     }
 }
 
@@ -49,4 +49,17 @@ svg {
 .key line {
     stroke: #000;
     shape-rendering: crispEdges;
+}
+
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
+
+    .plant {
+        padding: 5px;
+        border: 1px solid black;
+    }
 }

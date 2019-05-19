@@ -121,6 +121,6 @@ function fetchPlants(d) {
     const plantEls = plants.map((p) => {
       return `<div class="plant">${p.name}</div>`;
     });
-    document.querySelector('.grid').innerHTML = plantEls;
+    document.querySelector('.grid').innerHTML = plantEls.join('');
   };
 }
