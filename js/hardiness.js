@@ -1,14 +1,35 @@
 
-const width = 800;
-const height = 600;
+// Plant Details
+
+function showPlants(d) {
+  const request = new XMLHttpRequest();
+  request.open('GET', `./data/plants-zone${d.properties.zone}.json`);
+  request.responseType = 'json';
+  request.send();
+  request.onload = () => {
+    const plants = request.response;
+    const plantEls = plants.map(p => `<div class="plant">${p.name}</div>`);
+    document.querySelector('.grid').innerHTML = plantEls.join('');
+  };
+}
+
+
+// D3
+
+const width = document.getElementById('hardiness-map').clientWidth;
+const height = width * 0.6;
+const scaled = width / 775;
+
 
 function scale(scaleFactor) {
+  // const mything = d3.geoIdentity().reflectY(true).fitSize([960, 500], this);
   return d3.geoTransform({
       point(x, y) {
         this.stream.point(x * scaleFactor, y * scaleFactor);
       },
   });
 }
+
 
 function tempToZone(temp) {
   const adjTemp = temp + 60;
@@ -18,11 +39,14 @@ function tempToZone(temp) {
 }
 
 const path = d3.geoPath()
-    .projection(scale(0.8));
+    .projection(scale(scaled));
 
 const svg = d3.select('.map').append('svg')
   .attr('width', width)
-  .attr('height', height);
+  .attr('height', height)
+  .attr('preserveAspectRatio', 'xMinYMin meet')
+  .attr('viewBox', `0 0 ${width} ${height}`)
+  .classed('svg-content', true);
 
 const g = svg.append('g')
   .attr('id', 'zones');
@@ -54,8 +78,8 @@ function pair(array) {
 
 function zoneHovered(d) {
   tooltip.html(`Zone ${d.properties.zone}`)
-    .style('left', `${d3.event.pageX}px`)
-    .style('top', `${d3.event.pageY}px`);
+    .style('left', `${d3.event.pageX + 5}px`)
+    .style('top', `${d3.event.pageY + 5}px`);
   tooltip.transition()
     .duration(200)
     .style('opacity', 1);
@@ -99,7 +123,7 @@ d3.json('js/ophz.json')
             .duration(600)
             .style('opacity', 0);
         })
-        .on('click', fetchPlants)
+        .on('click', showPlants)
         .attr('class', d => `z${d.properties.zone}`)
         .attr('d', path)
         .style('fill', d => color(d.properties.t))
@@ -107,20 +131,3 @@ d3.json('js/ophz.json')
       .append('title')
         .text(d => d.properties.zone);
   });
-
-
-// Plant Details
-
-function fetchPlants(d) {
-  const request = new XMLHttpRequest();
-  request.open('GET', `./data/plants-zone${d.properties.zone}.json`);
-  request.responseType = 'json';
-  request.send();
-  request.onload = () => {
-    const plants = request.response;
-    const plantEls = plants.map((p) => {
-      return `<div class="plant">${p.name}</div>`;
-    });
-    document.querySelector('.grid').innerHTML = plantEls.join('');
-  };
-}

@@ -23,11 +23,20 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
-svg {
+.svg-content {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
     fill: none;
+
+    g {
+        pointer-events: none;
+    }
 
     path {
         // cursor: pointer;
+        pointer-events: all;
     }
 }
 

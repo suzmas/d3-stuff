@@ -17,8 +17,16 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 14px;
     font-weight: bold; }
 
-svg {
+.svg-content {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 0;
   fill: none; }
+  .svg-content g {
+    pointer-events: none; }
+  .svg-content path {
+    pointer-events: all; }
 
 .key {
   font: 10px sans-serif;
