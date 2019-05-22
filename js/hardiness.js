@@ -17,7 +17,7 @@ function showPlants(d) {
 // D3
 
 const width = document.getElementById('hardiness-map').clientWidth;
-const height = width * 0.6;
+const height = width * (2 / 3);
 const scaled = width / 775;
 
 
@@ -125,7 +125,12 @@ d3.json('js/ophz.json')
         })
         .on('click', showPlants)
         .attr('class', d => `z${d.properties.zone}`)
-        .attr('d', path)
+        .attr('d', (d) => {
+          console.log(d);
+          const thepath = path(d);
+          console.log(`path:\n${thepath}`);
+          return thepath;
+        })
         .style('fill', d => color(d.properties.t))
         .style('color', d => tempToZone(d.properties.t))
       .append('title')
