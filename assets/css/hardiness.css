@@ -19,13 +19,16 @@ h1, h2, h3, h4, h5, h6 {
 
 .svg-content {
   display: inline-block;
-  top: 0;
-  left: 0;
   fill: none; }
   .svg-content g {
     pointer-events: none; }
   .svg-content path {
     pointer-events: all; }
+
+.zone.active {
+  stroke: #fff;
+  stroke-width: 2px;
+  transform: translateY(-1px); }
 
 .key {
   font: 10px sans-serif;
@@ -47,7 +50,8 @@ h1, h2, h3, h4, h5, h6 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-column-gap: 10px;
-  grid-row-gap: 10px; }
+  grid-row-gap: 10px;
+  padding: 20px; }
   .grid .plant {
     padding: 5px;
     border: 1px solid black; }
