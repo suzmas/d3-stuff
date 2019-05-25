@@ -8,6 +8,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
+    margin: 1rem 0;
     font-family: "Lato", sans-serif;
 }
 
@@ -74,27 +75,45 @@ img {
 .grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(200px, 400px));
-    grid-column-gap: 10px;
-    grid-row-gap: 10px;
+    grid-gap: 20px;
     justify-content: center;
     padding: 20px;
 
     .plant {
+        display: grid;
+        grid-template-rows: min-content min-content 1fr;
+        border-radius: 10px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
         transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        overflow: hidden;
 
         &:hover {
             box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
         }
         .details {
-            padding: 10px;
+            position: relative;
+            padding: .5rem 1rem;
         }
         span {
             display: block;
             margin-bottom: 5px;
         }
+        .button {
+            display: block;
+            align-self: end;
+            margin-bottom: 1rem;
+            margin-right: 1rem;
+            color: cornflowerblue;
+            font-weight: bold;
+            text-align: right;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
         .title {
-            // margin-bottom: 10px;
+            a {
+                color: #000;
+                text-decoration: none;
+            }
         }
     }
 }

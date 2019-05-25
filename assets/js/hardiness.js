@@ -10,14 +10,15 @@ function showPlants(d) {
     const plants = request.response;
     const plantEls = plants.map(p => `
         <div class="plant">
-            <img src="assets/images/${p.img_nm}" />
-            <div class="details">
-            <span class="title"><a href="${p.url}" target="_blank">${p.name}</a></span>
-            <span class="family">${p.family}</span>
-            <span class="sun">${p.sun}</span>
-            <span class="water">${p.water}</span>
-            <span class="maintenance">${p.maintenance}</span>
+          <img src="assets/images/${p.img_nm}" />
+          <div class="details">
+            <h3 class="title"><a href="${p.url}" target="_blank">${p.name}</a></h3>
+            <p class="family"><strong>Plant Family</strong>: ${p.family}</p>
+            <p class="sun"><strong>Sun Requirements</strong>: ${p.sun}</p>
+            <p class="water"><strong>Water Requirements</strong>: ${p.water}</p>
+            <p class="maintenance"><strong>Maintenance Level</strong>: ${p.maintenance}</p>
           </div>
+          <a class="button" href="${p.url}" target="_blank">Learn More</a>
         </div>`);
     document.querySelector('.grid').innerHTML = plantEls.join('');
   };
