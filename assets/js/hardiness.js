@@ -10,7 +10,7 @@ function showPlants(d) {
     const plants = request.response;
     const plantEls = plants.map(p => `
         <div class="plant">
-          <img src="assets/images/${p.img_nm}" />
+          <img src="https://s3.amazonaws.com/ophz-plant-ims/images/${p.img_nm}" />
           <div class="details">
             <h3 class="title"><a href="${p.url}" target="_blank">${p.name}</a></h3>
             <p class="family"><strong>Plant Family</strong>: ${p.family}</p>
