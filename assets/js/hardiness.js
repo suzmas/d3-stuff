@@ -10,15 +10,15 @@ function showPlants(d) {
     const plants = request.response;
     const plantEls = plants.map(p => `
         <div class="plant">
-          <img src="https://s3.amazonaws.com/ophz-plant-ims/images/${p.img_nm}" />
+          <a href="${p.url}" target="_blank"><img src="https://s3.amazonaws.com/ophz-plant-ims/images/${p.img_nm}" /></a>
           <div class="details">
             <h3 class="title"><a href="${p.url}" target="_blank">${p.name}</a></h3>
-            <p class="family"><strong>Plant Family</strong>: ${p.family}</p>
-            <p class="sun"><strong>Sun Requirements</strong>: ${p.sun}</p>
-            <p class="water"><strong>Water Requirements</strong>: ${p.water}</p>
-            <p class="maintenance"><strong>Maintenance Level</strong>: ${p.maintenance}</p>
+            <p class="family"><span class="label">Family</span> ${p.family}</p>
+            <p class="sun"><span class="label">Sun</span> ${p.sun}</p>
+            <p class="water"><span class="label">Water</span> ${p.water}</p>
+            <p class="maintenance"><span class="label">Maintenance</span> ${p.maintenance}</p>
           </div>
-          <a class="button" href="${p.url}" target="_blank">Learn More</a>
+          <a class="button" href="${p.url}" target="_blank">Details ></a>
         </div>`);
     document.querySelector('.grid').innerHTML = plantEls.join('');
   };
@@ -118,7 +118,6 @@ key.selectAll('text')
     .attr('width', d => x(d[1]) - x(d[0]))
     .style('transform', 'translate(50%, 0)')
     .text((d) => {
-      console.log(d);
       return 'blue';
     });
 
@@ -142,12 +141,7 @@ d3.json('assets/js/ophz.json')
         })
         .on('click', zoneClicked)
         .attr('class', d => `z${d.properties.zone} zone`)
-        .attr('d', (d) => {
-          // console.log(d);
-          const thepath = path(d);
-          // console.log(`path:\n${thepath}`);
-          return thepath;
-        })
+        .attr('d', path)
         .style('fill', d => color(d.properties.t))
         .style('color', d => tempToZone(d.properties.t))
       .append('title')

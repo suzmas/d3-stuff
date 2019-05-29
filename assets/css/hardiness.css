@@ -5,8 +5,11 @@ body {
   font-family: "Lato", sans-serif; }
 
 h1, h2, h3, h4, h5, h6 {
-  margin: 1rem 0;
+  margin: .5rem 0 1rem;
   font-family: "Lato", sans-serif; }
+
+p {
+  margin: 0 0 12px; }
 
 img {
   max-width: 100%; }
@@ -47,7 +50,7 @@ img {
   display: none; }
 
 .key line {
-  stroke: #000;
+  stroke: #4b4b4b;
   shape-rendering: crispEdges; }
 
 .grid {
@@ -64,13 +67,16 @@ img {
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     overflow: hidden; }
     .grid .plant:hover {
-      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23); }
+      box-shadow: 0 3px 6px rgba(156, 11, 11, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23); }
     .grid .plant .details {
       position: relative;
       padding: .5rem 1rem; }
-    .grid .plant span {
-      display: block;
-      margin-bottom: 5px; }
+    .grid .plant .label {
+      margin-right: 10px;
+      color: grey;
+      font-size: 13px;
+      font-weight: bold;
+      text-transform: uppercase; }
     .grid .plant .button {
       display: block;
       align-self: end;
@@ -81,6 +87,10 @@ img {
       text-align: right;
       text-decoration: none;
       text-transform: uppercase; }
+      .grid .plant .button:hover {
+        color: #4e73b5; }
     .grid .plant .title a {
       color: #000;
       text-decoration: none; }
+    .grid .plant .icon {
+      width: 30px; }
