@@ -83,6 +83,9 @@ function transition3(val, max, start, end) {
   return [r1, r2, r3];
 }
 
+
+// ex input transition3mid(35, 70, [69, 117, 180], [239, 195, 99], [165, 0, 38])
+// also random http://strimas.com/r/ebird-county/
 function transition3mid(val, max, start, mid, end) {
   const midPoint = max / 2;
   if (val < midPoint) {
