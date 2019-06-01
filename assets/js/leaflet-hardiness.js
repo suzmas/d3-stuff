@@ -3,11 +3,13 @@
 
 
 const map = L.map('hardiness-map').setView([37.8, -96], 4);
+let geojson;
 
 
 L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.outdoors/{z}/{x}/{y}.png?access_token=pk.eyJ1Ijoic3V6bWFzIiwiYSI6ImNqdzlzbHY4ZjAybmEzeW10Z3dzcDY2cW4ifQ.VD3bq_R_nYPL8snODbm1cw', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-    maxZoom: 18,
+    minZoom: 4,
+    maxZoom: 6,
 }).addTo(map);
 
 
@@ -66,10 +68,10 @@ function showPlants(plants) {
         <a href="${p.url}" target="_blank"><img src="https://s3.amazonaws.com/ophz-plant-ims/images/${p.img_nm}" /></a>
         <div class="details">
           <h3 class="title"><a href="${p.url}" target="_blank">${p.name}</a></h3>
-          <p class="family"><span class="label">Family</span> ${p.family}</p>
-          <p class="sun"><span class="label">Sun</span> ${p.sun}</p>
-          <p class="water"><span class="label">Water</span> ${p.water}</p>
-          <p class="maintenance"><span class="label">Maintenance</span> ${p.maintenance}</p>
+          <p class="detail"><span class="label">Family</span> ${p.family}</p>
+          <p class="detail"><span class="label">Sun</span> ${p.sun}</p>
+          <p class="detail"><span class="label">Water</span> ${p.water}</p>
+          <p class="detail"><span class="label">Maintenance</span> ${p.maintenance}</p>
         </div>
         <a class="button" href="${p.url}" target="_blank">Details ></a>
       </div>`);
@@ -85,22 +87,48 @@ function getPlants(zone) {
 }
 
 function tempToZone(temp) {
-  const zoneScale = scale([-50, 50], [2, 11]);
+  const zoneScale = scale([-45, 45], [2, 11]);
   const adjTemp = zoneScale(temp);
   const zone = Math.ceil(adjTemp);
+  const ab = Math.round(adjTemp) < zone ? 'a' : 'b';
   return zone;
+}
+
+function zoneMouseover(e) {
+  const layer = e.target;
+  layer.setStyle({
+    weight: 5,
+  });
+  layer.bringToFront();
+}
+
+function zoneMouseout(e) {
+  geojson.resetStyle(e.target);
 }
 
 function zoneClicked(e) {
   const layer = e.target;
+  console.log(layer.feature);
   const temp = layer.feature.properties.DN;
   const zone = tempToZone(temp);
   getPlants(zone);
 }
 
-function zoneEvent(feature, layer) {
+function onEachZone(feature, layer) {
+  layer.feature.properties.zone = tempToZone(layer.feature.properties.DN);
   layer.on({
+    mouseover: zoneMouseover,
+    mouseout: zoneMouseout,
     click: zoneClicked,
+  });
+  layer.bindTooltip((l) => {
+    const temp = l.feature.properties.DN;
+    const zone = tempToZone(temp);
+    return `<div>Zone ${zone}</div>`;
+  }, {
+    direction: 'center',
+    offset: [30, 15],
+    sticky: true,
   });
 }
 
@@ -109,10 +137,11 @@ function addGeojson() {
   request.open('GET', 'assets/js/lophz.json');
   request.responseType = 'json';
   request.onload = () => {
-    L.geoJSON(request.response, {
+    geojson = L.geoJSON(request.response, {
       style: ophzStyle,
-      onEachFeature: zoneEvent,
-    }).addTo(map);
+      onEachFeature: onEachZone,
+    });
+    geojson.addTo(map);
   };
   request.send();
 }
