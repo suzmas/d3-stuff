@@ -10,33 +10,6 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.outdoors/{z}/{x}/{y}.png?acc
     maxZoom: 18,
 }).addTo(map);
 
-function ophzStyle(feature) {
-  return {
-    fillColor: getColor(feature.properties.DN),
-    fillOpacity: 0.8,
-    weight: 0,
-    color: '#000',
-  };
-}
-
-const geoLayer = new L.geoJSON();
-geoLayer.addTo(map);
-
-
-function addGeojson() {
-  const request = new XMLHttpRequest();
-  request.open('GET', 'assets/js/lophz.json');
-  request.responseType = 'json';
-  request.onload = () => {
-    L.geoJSON(request.response, {
-      style: ophzStyle,
-    }).addTo(map);
-  };
-  request.send();
-}
-
-addGeojson();
-
 
 function scale(domain, range) {
   const dMin = domain[0];
@@ -47,7 +20,7 @@ function scale(domain, range) {
                   * ((value - dMin) / (dMax - dMin));
 }
 
-const scaled = scale([-40, 40], [0, 100]);
+const colorScale = scale([-40, 40], [0, 100]);
 const color1 = [69, 117, 180];
 const color2 = [239, 195, 99];
 const color3 = [165, 0, 38];
@@ -73,7 +46,75 @@ function transition3mid(val, max, start, mid, end) {
 }
 
 function getColor(val) {
-  const scaledVal = scaled(val);
+  const scaledVal = colorScale(val);
   const rgb = `rgb(${(transition3mid(scaledVal, 100, color1, color2, color3)).join(',')}`;
   return rgb;
 }
+
+function ophzStyle(feature) {
+  return {
+    fillColor: getColor(feature.properties.DN),
+    fillOpacity: 0.8,
+    weight: 0,
+    color: '#000',
+  };
+}
+
+function showPlants(plants) {
+  const plantEls = plants.map(p => `
+      <div class="plant">
+        <a href="${p.url}" target="_blank"><img src="https://s3.amazonaws.com/ophz-plant-ims/images/${p.img_nm}" /></a>
+        <div class="details">
+          <h3 class="title"><a href="${p.url}" target="_blank">${p.name}</a></h3>
+          <p class="family"><span class="label">Family</span> ${p.family}</p>
+          <p class="sun"><span class="label">Sun</span> ${p.sun}</p>
+          <p class="water"><span class="label">Water</span> ${p.water}</p>
+          <p class="maintenance"><span class="label">Maintenance</span> ${p.maintenance}</p>
+        </div>
+        <a class="button" href="${p.url}" target="_blank">Details ></a>
+      </div>`);
+  document.querySelector('.grid').innerHTML = plantEls.join('');
+}
+
+function getPlants(zone) {
+  fetch(`./data/plantsd-zone${zone}.json`)
+      .then((response) => {
+        response.json().then(data => showPlants(data));
+      })
+      .catch((err) => { console.log(err); });
+}
+
+function tempToZone(temp) {
+  const zoneScale = scale([-50, 50], [2, 11]);
+  const adjTemp = zoneScale(temp);
+  const zone = Math.ceil(adjTemp);
+  return zone;
+}
+
+function zoneClicked(e) {
+  const layer = e.target;
+  const temp = layer.feature.properties.DN;
+  const zone = tempToZone(temp);
+  getPlants(zone);
+}
+
+function zoneEvent(feature, layer) {
+  layer.on({
+    click: zoneClicked,
+  });
+}
+
+function addGeojson() {
+  const request = new XMLHttpRequest();
+  request.open('GET', 'assets/js/lophz.json');
+  request.responseType = 'json';
+  request.onload = () => {
+    L.geoJSON(request.response, {
+      style: ophzStyle,
+      onEachFeature: zoneEvent,
+    }).addTo(map);
+  };
+  request.send();
+}
+
+addGeojson();

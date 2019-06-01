@@ -1,29 +1,29 @@
 
 // Plant Details
 
-function showPlants(d) {
-  const request = new XMLHttpRequest();
-  request.open('GET', `./data/plantsd-zone${d.properties.zone}.json`);
-  request.responseType = 'json';
-  request.send();
-  request.onload = () => {
-    const plants = request.response;
-    const plantEls = plants.map(p => `
-        <div class="plant">
-          <a href="${p.url}" target="_blank"><img src="https://s3.amazonaws.com/ophz-plant-ims/images/${p.img_nm}" /></a>
-          <div class="details">
-            <h3 class="title"><a href="${p.url}" target="_blank">${p.name}</a></h3>
-            <p class="family"><span class="label">Family</span> ${p.family}</p>
-            <p class="sun"><span class="label">Sun</span> ${p.sun}</p>
-            <p class="water"><span class="label">Water</span> ${p.water}</p>
-            <p class="maintenance"><span class="label">Maintenance</span> ${p.maintenance}</p>
-          </div>
-          <a class="button" href="${p.url}" target="_blank">Details ></a>
-        </div>`);
-    document.querySelector('.grid').innerHTML = plantEls.join('');
-  };
+function showPlants(plants) {
+  const plantEls = plants.map(p => `
+      <div class="plant">
+        <a href="${p.url}" target="_blank"><img src="https://s3.amazonaws.com/ophz-plant-ims/images/${p.img_nm}" /></a>
+        <div class="details">
+          <h3 class="title"><a href="${p.url}" target="_blank">${p.name}</a></h3>
+          <p class="family"><span class="label">Family</span> ${p.family}</p>
+          <p class="sun"><span class="label">Sun</span> ${p.sun}</p>
+          <p class="water"><span class="label">Water</span> ${p.water}</p>
+          <p class="maintenance"><span class="label">Maintenance</span> ${p.maintenance}</p>
+        </div>
+        <a class="button" href="${p.url}" target="_blank">Details ></a>
+      </div>`);
+  document.querySelector('.grid').innerHTML = plantEls.join('');
 }
 
+function getPlants(d) {
+  fetch(`./data/plantsd-zone${d.properties.zone}.json`)
+      .then((response) => {
+        response.json().then(data => showPlants(data));
+      })
+      .catch((err) => { console.log(err); });
+}
 
 // D3
 
@@ -97,7 +97,7 @@ function zoneHovered(d) {
 }
 
 function zoneClicked(d) {
-  showPlants(d);
+  getPlants(d);
   g.selectAll('.zone.active')
     .classed('active', false);
   this.classList.add('active');
