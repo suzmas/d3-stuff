@@ -1,8 +1,8 @@
-@import url("https://fonts.googleapis.com/css?family=Ubuntu:300,700");
+@import url("https://fonts.googleapis.com/css?family=Lato:300|Ubuntu&display=swap");
 body {
   height: 960px;
-  background: radial-gradient(720px at 490px, #081f2b 0%, #061616 100%);
-  font-family: "Ubuntu", sans-serif; }
+  background: radial-gradient(720px at 490px, #3b5b8c 0%, #061616 100%);
+  font-family: "Lato", sans-serif; }
 
 #star-map {
   position: relative; }
@@ -51,7 +51,7 @@ text {
   font-size: 14px; }
 
 .stars {
-  stroke: #000; }
+  stroke: transparent; }
 
 .star {
   fill: #fff;

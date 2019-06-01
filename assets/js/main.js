@@ -88,11 +88,11 @@ svg.append('g')
     .attr('dy', '.35em')
     .text(function(d) { return d + '°'; });
 
-d3.json('js/constellations.json', function(error, constellations) {
+d3.json('assets/js/constellations.json', function(error, constellations) {
   if (error) throw error;
 
   const request = new XMLHttpRequest();
-  request.open('GET', './js/constellation-data.json');
+  request.open('GET', './assets/js/constellation-data.json');
   request.responseType = 'json';
   request.send();
   request.onload = function() {
@@ -122,7 +122,7 @@ d3.json('js/constellations.json', function(error, constellations) {
   }
 });
 
-d3.csv('js/stars.csv', type, function(error, stars) {
+d3.csv('assets/js/stars.csv', type, function(error, stars) {
   if (error) throw error;
 
   svg.insert('g', '.ticks')
@@ -196,7 +196,7 @@ function projectedCoords(d) {
   return p[0] + ',' + p[1];
 }
 
-function flippedStereographic(lambda, phi)  {
+function flippedStereographic(lambda, phi) {
   var coslambda = Math.cos(lambda),
       cosphi = Math.cos(phi),
       k = 1 / (1 + coslambda * cosphi);
