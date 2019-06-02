@@ -1,16 +1,50 @@
 /* eslint-disable new-cap */
 /* global L */
 
+function showPlants(plants) {
+  const plantEls = plants.map(p => `
+      <div class="plant">
+        <a href="${p.url}" target="_blank" class="img-ctr"><img src="https://s3.amazonaws.com/ophz-plant-ims/images/${p.img_nm}" /></a>
+        <div class="details">
+          <h3 class="title"><a href="${p.url}" target="_blank">${p.name}</a></h3>
+          <p class="detail"><span class="label">Family</span> ${p.family}</p>
+          <p class="detail"><span class="label">Sun</span> ${p.sun}</p>
+          <p class="detail"><span class="label">Water</span> ${p.water}</p>
+          <p class="detail"><span class="label">Maintenance</span> ${p.maintenance}</p>
+          <a class="button" href="${p.url}" target="_blank">Details ></a>
+        </div>
+      </div>`);
+  document.querySelector('.grid').innerHTML = plantEls.join('');
+}
+
+function getPlants(zone) {
+  fetch(`./data/plantsd-zone${zone}.json`)
+      .then((response) => {
+        response.json().then(data => showPlants(data));
+      })
+      .catch((err) => { console.log(err); });
+}
+
+function updateZoneLabel(zone) {
+  document.getElementById('zone-title').innerText = `Zone ${zone} Plants`;
+}
 
 const map = L.map('hardiness-map').setView([37.8, -96], 4);
+const info = L.control({ position: 'topright' });
 let geojson;
-
 
 L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.outdoors/{z}/{x}/{y}.png?access_token=pk.eyJ1Ijoic3V6bWFzIiwiYSI6ImNqdzlzbHY4ZjAybmEzeW10Z3dzcDY2cW4ifQ.VD3bq_R_nYPL8snODbm1cw', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
     minZoom: 4,
     maxZoom: 6,
 }).addTo(map);
+
+info.onAdd = function infoAdd(m) {
+    const div = L.DomUtil.create('div', 'info');
+    div.innerHTML = '<h4>USDA Plant Hardiness Zones</h4>';
+    return div;
+};
+info.addTo(map);
 
 
 function scale(domain, range) {
@@ -54,52 +88,28 @@ function getColor(val) {
 }
 
 function ophzStyle(feature) {
+  const col = getColor(feature.properties.DN);
   return {
-    fillColor: getColor(feature.properties.DN),
-    fillOpacity: 0.8,
-    weight: 0,
-    color: '#000',
+    fillColor: col,
+    fillOpacity: 0.6,
+    weight: 1,
+    color: col,
+    opacity: 0.7,
   };
-}
-
-function showPlants(plants) {
-  const plantEls = plants.map(p => `
-      <div class="plant">
-        <a href="${p.url}" target="_blank"><img src="https://s3.amazonaws.com/ophz-plant-ims/images/${p.img_nm}" /></a>
-        <div class="details">
-          <h3 class="title"><a href="${p.url}" target="_blank">${p.name}</a></h3>
-          <p class="detail"><span class="label">Family</span> ${p.family}</p>
-          <p class="detail"><span class="label">Sun</span> ${p.sun}</p>
-          <p class="detail"><span class="label">Water</span> ${p.water}</p>
-          <p class="detail"><span class="label">Maintenance</span> ${p.maintenance}</p>
-        </div>
-        <a class="button" href="${p.url}" target="_blank">Details ></a>
-      </div>`);
-  document.querySelector('.grid').innerHTML = plantEls.join('');
-}
-
-function getPlants(zone) {
-  fetch(`./data/plantsd-zone${zone}.json`)
-      .then((response) => {
-        response.json().then(data => showPlants(data));
-      })
-      .catch((err) => { console.log(err); });
 }
 
 function tempToZone(temp) {
   const zoneScale = scale([-45, 45], [2, 11]);
   const adjTemp = zoneScale(temp);
   const zone = Math.ceil(adjTemp);
-  const ab = Math.round(adjTemp) < zone ? 'a' : 'b';
   return zone;
 }
 
 function zoneMouseover(e) {
   const layer = e.target;
   layer.setStyle({
-    weight: 5,
+    fillOpacity: 0.8,
   });
-  layer.bringToFront();
 }
 
 function zoneMouseout(e) {
@@ -109,22 +119,22 @@ function zoneMouseout(e) {
 function zoneClicked(e) {
   const layer = e.target;
   console.log(layer.feature);
-  const temp = layer.feature.properties.DN;
-  const zone = tempToZone(temp);
-  getPlants(zone);
+  updateZoneLabel(layer.feature.properties.zone);
+  getPlants(layer.feature.properties.zone);
 }
 
 function onEachZone(feature, layer) {
-  layer.feature.properties.zone = tempToZone(layer.feature.properties.DN);
+  const temp = layer.feature.properties.DN;
+  layer.feature.properties.zone = tempToZone(temp);
+  layer.feature.properties.subZone = Math.abs(temp) % 10 < 5 ? 'a' : 'b';
   layer.on({
     mouseover: zoneMouseover,
     mouseout: zoneMouseout,
     click: zoneClicked,
   });
   layer.bindTooltip((l) => {
-    const temp = l.feature.properties.DN;
-    const zone = tempToZone(temp);
-    return `<div>Zone ${zone}</div>`;
+    const zoneStr = `${l.feature.properties.zone}${l.feature.properties.subZone}`;
+    return `<div>Zone ${zoneStr}</div>`;
   }, {
     direction: 'center',
     offset: [30, 15],
@@ -133,17 +143,17 @@ function onEachZone(feature, layer) {
 }
 
 function addGeojson() {
-  const request = new XMLHttpRequest();
-  request.open('GET', 'assets/js/lophz.json');
-  request.responseType = 'json';
-  request.onload = () => {
-    geojson = L.geoJSON(request.response, {
-      style: ophzStyle,
-      onEachFeature: onEachZone,
-    });
-    geojson.addTo(map);
-  };
-  request.send();
+  fetch('assets/js/llophz.json')
+    .then((response) => {
+      response.json().then((ophzGeo) => {
+        geojson = L.geoJSON(ophzGeo, {
+          style: ophzStyle,
+          onEachFeature: onEachZone,
+        });
+        geojson.addTo(map);
+      });
+    })
+    .catch((err) => { console.log(err); });
 }
 
 addGeojson();

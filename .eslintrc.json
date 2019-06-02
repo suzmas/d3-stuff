@@ -9,6 +9,9 @@
         "topojson": "readonly"
     },
     "rules": {
-        "indent": "off"
+        "indent": "off",
+        "no-param-reassign": [2, { 
+            "props": false
+        }]
     }
 }
