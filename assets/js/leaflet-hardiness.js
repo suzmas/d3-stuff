@@ -61,15 +61,16 @@ const color1 = [69, 117, 180];
 const color2 = [239, 195, 99];
 const color3 = [165, 0, 38];
 
-function transitionRGBChannel(val, max, start, end) {
-  return start + (end - start) * val / max;
+function lerp(v0, v1, t) {
+  return v0 * (1 - t) + v1 * t;
 }
 
 function transitionRGB(val, max, start, end) {
-  const r1 = transitionRGBChannel(val, max, start[0], end[0]);
-  const r2 = transitionRGBChannel(val, max, start[1], end[1]);
-  const r3 = transitionRGBChannel(val, max, start[2], end[2]);
-  return [r1, r2, r3];
+  const interpolationRatio = val / max;
+  const r = lerp(start[0], end[0], interpolationRatio);
+  const g = lerp(start[1], end[1], interpolationRatio);
+  const b = lerp(start[2], end[2], interpolationRatio);
+  return [r, g, b];
 }
 
 // ex input transition3mid(35, 70, [69, 117, 180], [239, 195, 99], [165, 0, 38])
