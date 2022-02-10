@@ -2,7 +2,7 @@
   "name": "d3-stuff",
   "version": "1.0.0",
   "dependencies": {
-    "node-sass": "^4.12.0"
+    "node-sass": "^7.0.0"
   },
   "description": "Bits of d3 stuff to play with",
   "main": "index.js",
